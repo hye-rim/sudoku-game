@@ -522,9 +522,11 @@ showMenu();
 fit();
 requestAnimationFrame(frame);
 
+/* @test-hooks:start */
 // 테스트용
 window.__sd = { get state() { return state; }, get cells() { return cells; }, get solution() { return solution; }, get puzzle() { return puzzle; },
   get notes() { return notes; }, get mistakes() { return mistakes; }, get hintsLeft() { return hintsLeft; }, get sel() { return sel; }, get level() { return level; },
   get notesMode() { return notesMode; }, set notesMode(v) { notesMode = v; }, get time() { return time; }, get flashes() { return flashes; },
   newGame, select, put, erase, hint, update, draw, showMenu, resumeSave, loadSave, pause, resume, W, H, BX, BY, CELL, PAD_X0, PAD_Y, PAD_W, PAD_GAP, PAD_H, TOOL_Y, TOOL_H, TOOL_W, TOOL_GAP };
+/* @test-hooks:end */
 })();
