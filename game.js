@@ -7,7 +7,9 @@ const L = LOGIC;
 // ---------- 모양 ----------
 const W = 400;
 const CELL = 40, BX = 20, BY = 68, BS = CELL * 9;          // 판 왼쪽 위와 한 변
-const PAD_Y = BY + BS + 18, PAD_W = 36, PAD_GAP = 4.5, PAD_H = 54;
+// 숫자 버튼: 폰에서 옆 숫자를 잘못 누르지 않게 판보다 넓게(양옆 6) 쓰고 키를 키운다 (폰 폭 375px 에서 한 칸 약 38px)
+const PAD_X0 = 6, PAD_GAP = 3, PAD_W = (W - PAD_X0 * 2 - PAD_GAP * 8) / 9, PAD_H = 64;
+const PAD_Y = BY + BS + 16;
 const TOOL_Y = PAD_Y + PAD_H + 14, TOOL_H = 46, TOOL_W = 112, TOOL_GAP = 12;
 const H = TOOL_Y + TOOL_H + 14;
 const INK = '#2b1d52';
@@ -17,7 +19,7 @@ const EMOJI = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-seri
 const MAX_MISTAKES = 3, HINTS = 3;
 const SAVE_KEY = 'sudokuSave';
 
-const padX = (v) => BX + (v - 1) * (PAD_W + PAD_GAP);
+const padX = (v) => PAD_X0 + (v - 1) * (PAD_W + PAD_GAP);
 const toolX = (k) => BX + k * (TOOL_W + TOOL_GAP);
 const TOOLS = ['erase', 'notes', 'hint'];
 
@@ -370,8 +372,8 @@ function draw() {
     const active = selV === v && correct(sel);
     ctx.globalAlpha = left > 0 ? 1 : 0.35;
     panel(padX(v), PAD_Y, PAD_W, PAD_H, 12, active ? '#ffd23f' : '#ffffff', 4);
-    plain(String(v), padX(v) + PAD_W / 2, PAD_Y + 25, 27, notesMode ? '#ff5fa2' : INK);
-    if (left > 0) plain(String(left), padX(v) + PAD_W / 2, PAD_Y + PAD_H - 9, 11, '#6b5c95');
+    plain(String(v), padX(v) + PAD_W / 2, PAD_Y + 28, 29, notesMode ? '#ff5fa2' : INK);
+    if (left > 0) plain(String(left), padX(v) + PAD_W / 2, PAD_Y + PAD_H - 10, 12, '#6b5c95');
     ctx.globalAlpha = 1;
   }
   // 도구 버튼
@@ -470,9 +472,10 @@ canvas.addEventListener('pointerdown', (e) => {
   if (p.x >= BX && p.x < BX + BS && p.y >= BY && p.y < BY + BS) {
     return select(Math.floor((p.y - BY) / CELL) * 9 + Math.floor((p.x - BX) / CELL));
   }
-  if (p.y >= PAD_Y - 2 && p.y <= PAD_Y + PAD_H + 6) {
-    const v = Math.floor((p.x - BX) / (PAD_W + PAD_GAP)) + 1;
-    if (v >= 1 && v <= 9 && p.x >= padX(v) - PAD_GAP / 2 && 9 - cells.filter((x, i) => x === v && correct(i)).length > 0) put(v);
+  if (p.y >= PAD_Y - 4 && p.y <= PAD_Y + PAD_H + 8) {
+    // 버튼 사이 틈도 가까운 버튼으로 받는다 (손가락이 틈에 떨어져도 씹히지 않게)
+    const v = Math.floor((p.x - PAD_X0 + PAD_GAP / 2) / (PAD_W + PAD_GAP)) + 1;
+    if (v >= 1 && v <= 9 && 9 - cells.filter((x, i) => x === v && correct(i)).length > 0) put(v);
     return;
   }
   if (p.y >= TOOL_Y && p.y <= TOOL_Y + TOOL_H + 6) {
@@ -523,5 +526,5 @@ requestAnimationFrame(frame);
 window.__sd = { get state() { return state; }, get cells() { return cells; }, get solution() { return solution; }, get puzzle() { return puzzle; },
   get notes() { return notes; }, get mistakes() { return mistakes; }, get hintsLeft() { return hintsLeft; }, get sel() { return sel; }, get level() { return level; },
   get notesMode() { return notesMode; }, set notesMode(v) { notesMode = v; }, get time() { return time; }, get flashes() { return flashes; },
-  newGame, select, put, erase, hint, update, draw, showMenu, resumeSave, loadSave, pause, resume, W, H, BX, BY, CELL, PAD_Y, PAD_W, PAD_GAP, PAD_H, TOOL_Y, TOOL_H, TOOL_W, TOOL_GAP };
+  newGame, select, put, erase, hint, update, draw, showMenu, resumeSave, loadSave, pause, resume, W, H, BX, BY, CELL, PAD_X0, PAD_Y, PAD_W, PAD_GAP, PAD_H, TOOL_Y, TOOL_H, TOOL_W, TOOL_GAP };
 })();
